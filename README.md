@@ -4,7 +4,7 @@ Um jogo estilo Flappy Bird com sistema de cosméticos, poderes especiais e event
 
 ## 🎯 Jogar Online
 
-🔗 **[CLIQUE AQUI PARA JOGAR](https://DragonsPlays.github.io/skyjumper/)**
+🔗 **[CLIQUE AQUI PARA JOGAR]((https://dragonsplays.github.io/sky-jumper-ultimate/))**
 
 ## 🎮 Como Jogar
 
