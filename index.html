@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sky Jumper - Dragons_Plays Ultimate</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* LOGIN */
+        #loginScreen {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .loginBox {
+            background: white; padding: 35px; border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            text-align: center; max-width: 400px; width: 90%; color: #333;
+        }
+        .loginBox h1 { color: #764ba2; margin-bottom: 5px; }
+        .loginBox p { color: #888; margin-bottom: 20px; font-size: 14px; }
+        .loginBox input {
+            width: 100%; padding: 14px; margin: 8px 0;
+            border: 2px solid #ddd; border-radius: 10px; font-size: 15px;
+        }
+        .loginBox input:focus { border-color: #764ba2; outline: none; }
+        .loginBox button {
+            width: 100%; padding: 14px; margin: 8px 0;
+            border: none; border-radius: 10px; font-size: 15px;
+            font-weight: bold; cursor: pointer; transition: all 0.3s;
+        }
+        .loginBox button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .btn-main { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-guest { background: #f0f0f0; color: #666; }
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tabs button { flex: 1; padding: 12px; background: #f0f0f0; border: none; cursor: pointer; font-weight: bold; color: #666; transition: all 0.2s; }
+        .tabs button.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .tabs button:first-child { border-radius: 10px 0 0 10px; }
+        .tabs button:last-child { border-radius: 0 10px 10px 0; }
+        .divider { display: flex; align-items: center; margin: 20px 0; color: #bbb; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #ddd; }
+        .divider span { padding: 0 15px; font-size: 13px; }
+
+        /* GAME */
+        #gameScreen { display: none; padding: 10px; }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 20px; background: rgba(255,255,255,0.08);
+            border-radius: 15px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
+        }
+        .userInfo { display: flex; align-items: center; gap: 12px; }
+        .avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; border: 3px solid rgba(255,255,255,0.3);
+        }
+        .userName { font-weight: bold; font-size: 16px; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-left: 8px; }
+        .badge-owner { background: linear-gradient(135deg, #FFD700, #FFA500); color: #333; animation: glow 2s infinite; }
+        .badge-admin { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+        .badge-mod { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+        .badge-vip { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+        @keyframes glow { 0%,100% { box-shadow: 0 0 10px rgba(255,215,0,0.5); } 50% { box-shadow: 0 0 25px rgba(255,215,0,0.9); } }
+        
+        .stats { display: flex; gap: 12px; flex-wrap: wrap; }
+        .stat { background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 25px; font-size: 13px; font-weight: bold; }
+
+        .mainArea { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .gameArea { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; }
+        canvas { border: 4px solid rgba(255,255,255,0.2); border-radius: 12px; display: block; cursor: pointer; background: #1a1a2e; }
+
+        .sidePanel {
+            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;
+            width: 300px; max-height: 580px; overflow-y: auto;
+        }
+        .sidePanel h3 { color: #fdcb6e; font-size: 14px; margin: 15px 0 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+        .sidePanel h3:first-child { margin-top: 0; }
+
+        .btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; justify-content: center; }
+        .btns button {
+            padding: 10px 16px; border: none; border-radius: 25px;
+            font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s;
+        }
+        .btns button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn-play { background: linear-gradient(135deg, #00b894, #00a085); color: white; }
+        .btn-coop { background: linear-gradient(135deg, #0984e3, #0652DD); color: white; }
+        .btn-shop { background: linear-gradient(135deg, #fdcb6e, #f39c12); color: #333; }
+        .btn-yt { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+        .btn-pix { background: linear-gradient(135deg, #00cec9, #00b894); color: white; }
+        .btn-admin { background: linear-gradient(135deg, #d63031, #b71540); color: white; }
+        .btn-out { background: rgba(255,255,255,0.1); color: #aaa; }
+
+        /* ADMIN PANEL */
+        #adminPanel {
+            display: none; position: fixed; top: 0; right: -420px;
+            width: 400px; height: 100%; background: linear-gradient(180deg, #1a1a2e, #0d0d1a);
+            box-shadow: -5px 0 40px rgba(0,0,0,0.6); z-index: 3000;
+            transition: right 0.3s ease; overflow-y: auto; padding: 20px;
+        }
+        #adminPanel.open { right: 0; }
+        .adminHead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid rgba(255,255,255,0.1); }
+        .adminSection { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 12px; }
+        .adminSection h4 { color: #fdcb6e; font-size: 13px; margin-bottom: 10px; }
+        .adminSection input, .adminSection select, .adminSection textarea {
+            width: 100%; padding: 10px; margin: 5px 0; border: none; border-radius: 8px;
+            background: rgba(255,255,255,0.1); color: white; font-size: 13px;
+        }
+        .adminSection button {
+            width: 100%; padding: 10px; margin: 4px 0; border: none; border-radius: 8px;
+            font-weight: bold; cursor: pointer; font-size: 12px; transition: all 0.2s;
+        }
+        .adminSection button:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-broadcast { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+        .btn-event { background: linear-gradient(135deg, #f39c12, #d68910); color: white; }
+        .btn-reward { background: linear-gradient(135deg, #27ae60, #1e8449); color: white; }
+        .btn-role { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+
+        /* GLOBAL MESSAGE */
+        #globalMsg {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); padding: 40px 60px;
+            border-radius: 20px; text-align: center; z-index: 5000;
+            background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,40,0.95));
+            border: 4px solid; max-width: 90%; animation: msgPop 0.5s ease;
+        }
+        @keyframes msgPop { from { transform: translate(-50%,-50%) scale(0.5); opacity: 0; } to { transform: translate(-50%,-50%) scale(1); opacity: 1; } }
+        #globalMsg h2 { font-size: 26px; margin-bottom: 12px; }
+        #globalMsg p { font-size: 18px; margin-bottom: 15px; line-height: 1.5; }
+        #globalMsg .from { font-size: 13px; color: #888; }
+
+        /* MODALS */
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background: linear-gradient(180deg, #2d2d44, #1a1a2e);
+            padding: 25px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            z-index: 2001; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;
+        }
+        .modal h2 { text-align: center; margin-bottom: 15px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; }
+        .closeBtn {
+            position: absolute; top: 12px; right: 12px; background: #e74c3c; color: white;
+            border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px;
+        }
+
+        /* ITEMS */
+        .itemGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin: 10px 0; }
+        .itemCard {
+            background: rgba(255,255,255,0.08); border-radius: 12px; padding: 12px;
+            text-align: center; cursor: pointer; transition: all 0.2s; border: 2px solid transparent;
+        }
+        .itemCard:hover { background: rgba(255,255,255,0.12); transform: translateY(-3px); }
+        .itemCard.owned { border-color: #27ae60; }
+        .itemCard.equipped { border-color: #f39c12; box-shadow: 0 0 15px rgba(243,156,18,0.4); }
+        .itemCard.exclusive { background: linear-gradient(135deg, rgba(231,76,60,0.2), rgba(192,57,43,0.2)); border-color: #e74c3c; }
+        .itemIcon { font-size: 32px; margin-bottom: 6px; }
+        .itemName { font-size: 11px; font-weight: bold; }
+        .itemPrice { font-size: 10px; color: #00cec9; margin-top: 4px; }
+        .itemSkill { font-size: 9px; color: #a29bfe; margin-top: 4px; }
+
+        /* SKILL BAR */
+        #skillBar {
+            display: none; position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%); background: rgba(0,0,0,0.85);
+            padding: 12px 25px; border-radius: 35px; z-index: 100;
+        }
+        .skillBtn {
+            width: 60px; height: 60px; border-radius: 50%; border: 3px solid #555;
+            background: linear-gradient(135deg, #333, #1a1a1a); cursor: pointer;
+            font-size: 28px; display: flex; align-items: center; justify-content: center;
+            position: relative; transition: all 0.2s;
+        }
+        .skillBtn:hover:not(.cd) { transform: scale(1.1); border-color: #fff; }
+        .skillBtn.ready { border-color: #2ecc71; box-shadow: 0 0 15px rgba(46,204,113,0.6); }
+        .skillBtn.cd { opacity: 0.4; cursor: not-allowed; }
+        .skillBtn .cdText { position: absolute; font-size: 14px; font-weight: bold; color: #fff; }
+
+        /* COOP */
+        #coopInfo {
+            display: none; position: fixed; top: 80px; left: 50%;
+            transform: translateX(-50%); background: rgba(0,0,0,0.8);
+            padding: 10px 25px; border-radius: 25px; z-index: 100; gap: 25px;
+        }
+        .pDot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+
+        /* NOTIFICATION */
+        #notif {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            padding: 15px 30px; border-radius: 15px; z-index: 4000;
+            transition: transform 0.4s ease; font-weight: bold; text-align: center;
+        }
+        #notif.show { transform: translateX(-50%) translateY(0); }
+        #notif.normal { background: linear-gradient(135deg, #667eea, #764ba2); }
+        #notif.event { background: linear-gradient(135deg, #f39c12, #d68910); }
+        #notif.admin { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        #notif.success { background: linear-gradient(135deg, #27ae60, #1e8449); }
+
+        /* COLLECTIBLES */
+        .colGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .colItem { background: rgba(255,255,255,0.08); padding: 10px; border-radius: 10px; text-align: center; opacity: 0.3; }
+        .colItem.has { opacity: 1; background: linear-gradient(135deg, rgba(155,89,182,0.3), rgba(142,68,173,0.3)); border: 2px solid #9b59b6; }
+        .colItem .ico { font-size: 28px; }
+        .colItem .nm { font-size: 9px; margin-top: 4px; }
+
+        /* MESSAGES LOG */
+        #msgLog { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; max-height: 140px; overflow-y: auto; font-size: 11px; }
+
+        @media (max-width: 768px) {
+            .sidePanel { width: 100%; }
+            #adminPanel { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div id="loginScreen">
+        <div class="loginBox">
+            <h1>🐦 Sky Jumper</h1>
+            <p>Dragons_Plays Ultimate Edition</p>
+            
+            <div class="tabs">
+                <button class="active" onclick="switchTab('login')">Entrar</button>
+                <button onclick="switchTab('register')">Criar Conta</button>
+            </div>
+
+            <div id="tabLogin">
+                <input type="email" id="inEmail" placeholder="📧 Email">
+                <input type="password" id="inPass" placeholder="🔒 Senha">
+                <button class="btn-main" onclick="doLogin()">Entrar</button>
+            </div>
+
+            <div id="tabRegister" style="display:none;">
+                <input type="text" id="regName" placeholder="👤 Nome de usuário">
+                <input type="email" id="regEmail" placeholder="📧 Email">
+                <input type="password" id="regPass" placeholder="🔒 Senha (mín. 4 caracteres)">
+                <input type="password" id="regPass2" placeholder="🔒 Confirmar senha">
+                <button class="btn-main" onclick="doRegister()">Criar Conta e Entrar</button>
+            </div>
+
+            <div class="divider"><span>ou</span></div>
+            <button class="btn-guest" onclick="enterGuest()">Jogar como Visitante</button>
+            <p style="font-size:11px; color:#aaa; margin-top:15px;">Visitantes começam do zero. Crie uma conta para salvar!</p>
+        </div>
+    </div>
+
+    <!-- GAME -->
+    <div id="gameScreen">
+        <div class="header">
+            <div class="userInfo">
+                <div class="avatar" id="avatar">🐦</div>
+                <div>
+                    <span class="userName" id="uName">Jogador</span>
+                    <span id="uBadge"></span>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat">🪙 <span id="sCoins">0</span></div>
+                <div class="stat">💎 <span id="sGems">0</span></div>
+                <div class="stat">⭐ Lv.<span id="sLevel">1</span></div>
+                <div class="stat">🏆 <span id="sRecord">0</span></div>
+            </div>
+        </div>
+
+        <div class="mainArea">
+            <div class="gameArea">
+                <canvas id="canvas" width="420" height="500"></canvas>
+                <div class="btns">
+                    <button class="btn-play" onclick="startGame('solo')">🎮 Solo</button>
+                    <button class="btn-coop" onclick="startGame('coop')">👥 Coop</button>
+                    <button class="btn-shop" onclick="openModal('shopModal')">🛍️ Loja</button>
+                    <button class="btn-yt" onclick="openModal('ytModal')">📺 Grátis</button>
+                    <button class="btn-pix" onclick="openModal('pixModal')">💰 PIX</button>
+                    <button class="btn-admin" id="btnAdmin" onclick="toggleAdmin()">👑 Admin</button>
+                    <button class="btn-out" onclick="logout()">🚪</button>
+                </div>
+            </div>
+
+            <div class="sidePanel">
+                <h3>📊 Status</h3>
+                <p style="font-size:12px;">🎯 Modo: <span id="iMode">Menu</span></p>
+                <p style="font-size:12px;">🐦 Pássaro: <span id="iBird">Padrão</span></p>
+                <p style="font-size:12px;">⚡ Skill: <span id="iSkill">Nenhum</span></p>
+                <p style="font-size:12px;">🌍 Cenário: <span id="iScene">Normal</span></p>
+
+                <h3>🎁 Colecionáveis</h3>
+                <div class="colGrid" id="colList"></div>
+
+                <h3>📢 Mensagens</h3>
+                <div id="msgLog"><p style="color:#666;">Sem mensagens.</p></div>
+
+                <h3>💾 Backup</h3>
+                <button onclick="exportData()" style="width:100%;padding:8px;border:none;border-radius:8px;background:#3498db;color:white;cursor:pointer;font-size:11px;margin:3px 0;">📥 Exportar Dados</button>
+                <button onclick="document.getElementById('importFile').click()" style="width:100%;padding:8px;border:none;border-radius:8px;background:#27ae60;color:white;cursor:pointer;font-size:11px;margin:3px 0;">📤 Importar Dados</button>
+                <input type="file" id="importFile" style="display:none;" accept=".json" onchange="importData(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="adminPanel">
+        <div class="adminHead">
+            <h2>👑 Painel Admin</h2>
+            <button class="closeBtn" onclick="toggleAdmin()">✖</button>
+        </div>
+
+        <div class="adminSection">
+            <h4>📢 Mensagem Global</h4>
+            <input type="text" id="aMsgTitle" placeholder="Título (ex: EVENTO!)">
+            <textarea id="aMsgText" placeholder="Mensagem..." style="min-height:60px;"></textarea>
+            <select id="aMsgColor">
+                <option value="#FFD700">🟡 Dourado</option>
+                <option value="#FF4444">🔴 Vermelho</option>
+                <option value="#44FF44">🟢 Verde</option>
+                <option value="#4444FF">🔵 Azul</option>
+                <option value="#FF44FF">🟣 Rosa</option>
+                <option value="#00FFFF">🩵 Ciano</option>
+            </select>
+            <button class="btn-broadcast" onclick="sendGlobalMsg()">📣 ENVIAR PARA TODOS</button>
+        </div>
+
+        <div class="adminSection">
+            <h4>🔥 Evento - Pássaros Exclusivos</h4>
+            <select id="aEventBird">
+                <option value="ex_thunder">⚡ Trovão</option>
+                <option value="ex_phoenix">🔥 Fênix</option>
+                <option value="ex_ghost">👻 Fantasma</option>
+                <option value="ex_dragon">🐉 Dragão</option>
+                <option value="ex_ice">❄️ Gelo</option>
+                <option value="ex_shadow">🌑 Sombra</option>
+                <option value="ex_angel">👼 Anjo</option>
+                <option value="ex_demon">😈 Demônio</option>
+                <option value="ex_cosmic">🌌 Cósmico</option>
+            </select>
+            <button class="btn-event" onclick="startBirdEvent()">🎁 INICIAR EVENTO</button>
+        </div>
+
+        <div class="adminSection">
+            <h4>🌍 Cenário & Dificuldade</h4>
+            <select id="aScene">
+                <option value="normal">🌤️ Normal</option>
+                <option value="night">🌙 Noite</option>
+                <option value="sunset">🌅 Pôr do Sol</option>
+                <option value="storm">⛈️ Tempestade</option>
+                <option value="space">🌌 Espaço</option>
+                <option value="hell">🔥 Inferno</option>
+                <option value="heaven">☁️ Paraíso</option>
+            </select>
+            <select id="aDiff">
+                <option value="easy">😊 Fácil</option>
+                <option value="normal">😐 Normal</option>
+                <option value="hard">😰 Difícil</option>
+                <option value="extreme">💀 Extremo</option>
+            </select>
+            <button class="btn-event" onclick="applySceneDiff()">🌍 APLICAR</button>
+        </div>
+
+        <div class="adminSection">
+            <h4>🎁 Dar Recompensas</h4>
+            <input type="number" id="aRewardAmt" value="100" placeholder="Quantidade">
+            <select id="aRewardType">
+                <option value="coins">🪙 Moedas</option>
+                <option value="gems">💎 Gemas</option>
+            </select>
+            <button class="btn-reward" onclick="giveReward()">🎁 DAR PARA TODOS</button>
+        </div>
+
+        <div class="adminSection">
+            <h4>👥 Gerenciar Cargos</h4>
+            <input type="email" id="aRoleEmail" placeholder="Email do jogador">
+            <select id="aRoleType">
+                <option value="player">👤 Jogador</option>
+                <option value="vip">⭐ VIP</option>
+                <option value="mod">🛡️ Moderador</option>
+                <option value="admin">👑 Admin</option>
+            </select>
+            <button class="btn-role" onclick="setRole()">✅ DEFINIR CARGO</button>
+            <div id="roleList" style="margin-top:10px;font-size:10px;color:#888;"></div>
+        </div>
+
+        <div class="adminSection">
+            <h4>🎁 Soltar Colecionável</h4>
+            <select id="aColDrop">
+                <option value="c1">👑 Coroa</option>
+                <option value="c2">🌟 Estrela</option>
+                <option value="c3">🏆 Troféu</option>
+                <option value="c4">💎 Diamante</option>
+                <option value="c5">🐉 Escama</option>
+                <option value="c6">🪶 Pena</option>
+                <option value="c7">🌙 Lua</option>
+                <option value="c8">🔮 Cristal</option>
+                <option value="c9">❤️‍🔥 Coração</option>
+            </select>
+            <button class="btn-event" onclick="dropCollectible()">🎁 SOLTAR NO JOGO</button>
+        </div>
+
+        <div class="adminSection">
+            <h4>⚙️ Console</h4>
+            <input type="text" id="aCmd" placeholder="/comando" onkeypress="if(event.key==='Enter')runCmd()">
+            <button onclick="runCmd()" style="background:#222;color:#0f0;">▶️ Executar</button>
+            <div id="cmdOut" style="background:#000;color:#0f0;padding:8px;border-radius:5px;margin-top:8px;font-family:monospace;font-size:10px;max-height:100px;overflow-y:auto;">> Console pronto. /help</div>
+        </div>
+    </div>
+
+    <!-- SKILL BAR -->
+    <div id="skillBar">
+        <div class="skillBtn ready" id="sBtn" onclick="useSkill()">
+            <span id="sIcon">⚡</span>
+            <span class="cdText" id="sCd"></span>
+        </div>
+    </div>
+
+    <!-- COOP -->
+    <div id="coopInfo">
+        <span><span class="pDot" style="background:#3498db;"></span>P1: W/Espaço</span>
+        <span><span class="pDot" style="background:#e74c3c;"></span>P2: Setas</span>
+    </div>
+
+    <!-- NOTIF -->
+    <div id="notif" class="normal"></div>
+
+    <!-- GLOBAL MSG -->
+    <div id="globalMsg">
+        <h2 id="gTitle">TÍTULO</h2>
+        <p id="gText">Mensagem</p>
+        <div class="from" id="gFrom">— Admin</div>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- SHOP -->
+    <div class="modal" id="shopModal">
+        <button class="closeBtn" onclick="closeModal('shopModal')">✖</button>
+        <h2>🛍️ Loja</h2>
+        <div class="tabs" style="margin-bottom:10px;">
+            <button class="active" onclick="shopTab('normal')">🐦 Normais</button>
+            <button onclick="shopTab('exclusive')">🔥 Exclusivos</button>
+        </div>
+        <div id="shopNormal" class="itemGrid"></div>
+        <div id="shopExclusive" class="itemGrid" style="display:none;"></div>
+    </div>
+
+    <!-- YOUTUBE -->
+    <div class="modal" id="ytModal">
+        <button class="closeBtn" onclick="closeModal('ytModal')">✖</button>
+        <div style="text-align:center;">
+            <div style="font-size:60px;">🎁</div>
+            <h2>Item Grátis!</h2>
+            <p style="margin:15px 0;">Inscreva-se em <strong style="color:#e74c3c;">Dragons_Plays</strong> e ganhe:</p>
+            <ul style="text-align:left;margin:15px 40px;font-size:13px;">
+                <li>👑 Pássaro Roxo Premium</li>
+                <li>✨ Trilha Especial</li>
+                <li>🪙 500 Moedas</li>
+            </ul>
+            <button class="btn-yt" onclick="window.open('https://www.youtube.com/@dragonsplaysofc','_blank')" style="padding:15px 30px;font-size:15px;">📺 IR PARA O CANAL</button>
+            <div style="margin-top:20px;">
+                <input type="text" id="ytIn" placeholder="Digite: Dragons_Plays" style="padding:12px;width:80%;border-radius:10px;border:2px solid #555;background:#222;color:white;">
+                <button onclick="verifyYT()" style="margin-top:10px;padding:10px 25px;border:none;border-radius:10px;background:#27ae60;color:white;font-weight:bold;cursor:pointer;">✅ Verificar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIX -->
+    <div class="modal" id="pixModal">
+        <button class="closeBtn" onclick="closeModal('pixModal')">✖</button>
+        <h2>💰 Loja PIX</h2>
+        <p style="text-align:center;color:#00cec9;margin-bottom:15px;font-size:13px;">Chave PIX: yuri.gamarim4@gmail.com</p>
+
+        <div style="background:rgba(255,255,255,0.08);padding:12px;border-radius:12px;margin:8px 0;">
+            <strong>📦 Starter - R$ 4,99</strong>
+            <p style="font-size:11px;color:#888;">1000 Moedas + 10 Gemas</p>
+            <button class="btn-pix" onclick="buyPix('starter',4.99)">Comprar</button>
+        </div>
+
+        <div style="background:linear-gradient(135deg,rgba(155,89,182,0.2),rgba(142,68,173,0.2));padding:12px;border-radius:12px;margin:8px 0;border:2px solid #9b59b6;">
+            <strong>⭐ VIP - R$ 9,99</strong>
+            <p style="font-size:11px;color:#888;">3000 Moedas + 30 Gemas + VIP + Todos Normais</p>
+            <button class="btn-pix" onclick="buyPix('vip',9.99)">Comprar</button>
+        </div>
+
+        <div style="background:linear-gradient(135deg,rgba(241,196,15,0.2),rgba(243,156,18,0.2));padding:12px;border-radius:12px;margin:8px 0;border:2px solid #f1c40f;">
+            <strong>🔥 LENDÁRIO - R$ 19,99</strong>
+            <p style="font-size:11px;color:#888;">10000 Moedas + 100 Gemas + TUDO</p>
+            <button class="btn-pix" onclick="buyPix('legendary',19.99)">Comprar</button>
+        </div>
+
+        <h3 style="margin-top:15px;color:#fdcb6e;">🔥 Exclusivos (PIX)</h3>
+        <div id="pixExcl" class="itemGrid"></div>
+    </div>
+
+    <!-- PIX PAY -->
+    <div class="modal" id="pixPayModal">
+        <button class="closeBtn" onclick="closeModal('pixPayModal')">✖</button>
+        <h2>💳 Pagamento PIX</h2>
+        <div style="text-align:center;">
+            <p id="pxName" style="font-size:18px;font-weight:bold;"></p>
+            <p id="pxPrice" style="font-size:26px;color:#00cec9;margin:10px 0;"></p>
+            <div style="background:rgba(0,206,201,0.15);padding:15px;border-radius:12px;margin:15px 0;border:2px dashed #00cec9;">
+                <p style="font-size:11px;color:#888;">Chave PIX (E-mail):</p>
+                <p style="font-family:monospace;font-size:15px;margin:8px 0;">yuri.gamarim4@gmail.com</p>
+                <button onclick="navigator.clipboard.writeText('yuri.gamarim4@gmail.com');notify('Copiado!','success')" style="padding:8px 20px;background:#00cec9;border:none;border-radius:20px;cursor:pointer;color:white;font-weight:bold;">📋 Copiar</button>
+            </div>
+            <input type="text" id="pxBuyer" placeholder="Seu nome" style="width:100%;padding:12px;border-radius:10px;border:2px solid #444;background:#222;color:white;margin:10px 0;">
+            <button onclick="confirmPix()" style="width:100%;padding:15px;background:linear-gradient(135deg,#27ae60,#1e8449);border:none;border-radius:12px;color:white;font-weight:bold;font-size:16px;cursor:pointer;">✅ CONFIRMAR</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIG
+        // ============================================
+        const OWNER = { email: "yuri.gamarim4@gmail.com", pass: "4550Riyu@" };
+        const PIX = "yuri.gamarim4@gmail.com";
+
+        // ============================================
+        // PÁSSAROS
+        // ============================================
+        const BIRDS = [
+            { id: 'b_default', name: 'Padrão', icon: '🐤', color: '#FFD700', price: 0 },
+            { id: 'b_red', name: 'Vermelho', icon: '🔴', color: '#FF4444', price: 100 },
+            { id: 'b_blue', name: 'Azul', icon: '🔵', color: '#4444FF', price: 100 },
+            { id: 'b_green', name: 'Verde', icon: '🟢', color: '#44FF44', price: 100 },
+            { id: 'b_pink', name: 'Rosa', icon: '🩷', color: '#FF69B4', price: 150 },
+            { id: 'b_orange', name: 'Laranja', icon: '🟠', color: '#FF8C00', price: 150 },
+            { id: 'b_cyan', name: 'Ciano', icon: '🩵', color: '#00CED1', price: 150 },
+            { id: 'b_purple', name: 'Roxo', icon: '🟣', color: '#9B59B6', price: 200 },
+            { id: 'b_white', name: 'Branco', icon: '⚪', color: '#FFFFFF', price: 200 },
+            { id: 'b_black', name: 'Preto', icon: '⚫', color: '#1a1a1a', price: 200 },
+            { id: 'b_gold', name: 'Dourado', icon: '🌟', color: '#FFD700', price: 300 },
+            { id: 'b_silver', name: 'Prata', icon: '🥈', color: '#C0C0C0', price: 300 },
+            { id: 'b_rainbow', name: 'Arco-íris', icon: '🌈', color: 'rainbow', price: 500 },
+            { id: 'b_neon', name: 'Neon', icon: '💡', color: '#00FF00', price: 400 },
+            { id: 'b_galaxy', name: 'Galáxia', icon: '🌌', color: '#4B0082', price: 600 },
+            { id: 'b_sunset', name: 'Pôr do Sol', icon: '🌅', color: '#FF6347', price: 350 },
+            { id: 'b_ocean', name: 'Oceano', icon: '🌊', color: '#006994', price: 350 },
+            { id: 'b_forest', name: 'Floresta', icon: '🌲', color: '#228B22', price: 350 },
+            { id: 'b_lava', name: 'Lava', icon: '🌋', color: '#FF4500', price: 450 },
+            { id: 'b_ice', name: 'Gelado', icon: '🧊', color: '#ADD8E6', price: 450 },
+            { id: 'b_cherry', name: 'Cereja', icon: '🍒', color: '#DC143C', price: 300 },
+            { id: 'b_mint', name: 'Menta', icon: '🌿', color: '#98FB98', price: 300 },
+            { id: 'b_coral', name: 'Coral', icon: '🪸', color: '#FF7F50', price: 350 },
+            { id: 'b_lavender', name: 'Lavanda', icon: '💜', color: '#E6E6FA', price: 350 },
+            { id: 'b_peach', name: 'Pêssego', icon: '🍑', color: '#FFDAB9', price: 300 },
+            { id: 'b_lime', name: 'Limão', icon: '🍋', color: '#32CD32', price: 300 },
+            { id: 'b_ruby', name: 'Rubi', icon: '❤️', color: '#E0115F', price: 500 },
+            { id: 'b_sapphire', name: 'Safira', icon: '💙', color: '#0F52BA', price: 500 },
+            { id: 'b_emerald', name: 'Esmeralda', icon: '💚', color: '#50C878', price: 500 },
+            { id: 'b_amber', name: 'Âmbar', icon: '🧡', color: '#FFBF00', price: 450 },
+            { id: 'b_yt', name: 'YT Premium', icon: '👑', color: '#9c27b0', price: 0, yt: true }
+        ];
+
+        // 9 EXCLUSIVOS COM PODERES
+        const EXCLUSIVES = [
+            { id: 'ex_thunder', name: 'Trovão', icon: '⚡', color: '#F1C40F', pix: 5.99, skill: 'Velocidade', desc: '2x rápido 4s', cd: 12, fx: 'speed' },
+            { id: 'ex_phoenix', name: 'Fênix', icon: '🔥', color: '#E74C3C', pix: 7.99, skill: 'Renascer', desc: 'Revive 1x', cd: 60, fx: 'revive' },
+            { id: 'ex_ghost', name: 'Fantasma', icon: '👻', color: '#95A5A6', pix: 6.99, skill: 'Atravessar', desc: 'Atravessa 3s', cd: 18, fx: 'ghost' },
+            { id: 'ex_dragon', name: 'Dragão', icon: '🐉', color: '#8E44AD', pix: 9.99, skill: 'Fogo', desc: 'Destrói 2 canos', cd: 20, fx: 'fire' },
+            { id: 'ex_ice', name: 'Gelo', icon: '❄️', color: '#3498DB', pix: 6.99, skill: 'Congelar', desc: 'Tudo para 3s', cd: 15, fx: 'freeze' },
+            { id: 'ex_shadow', name: 'Sombra', icon: '🌑', color: '#2C3E50', pix: 7.99, skill: 'Teleporte', desc: 'Teleporta', cd: 10, fx: 'tp' },
+            { id: 'ex_angel', name: 'Anjo', icon: '👼', color: '#ECF0F1', pix: 8.99, skill: 'Escudo', desc: 'Proteção 5s', cd: 20, fx: 'shield' },
+            { id: 'ex_demon', name: 'Demônio', icon: '😈', color: '#C0392B', pix: 8.99, skill: 'Explosão', desc: 'Destrói tudo', cd: 30, fx: 'explode' },
+            { id: 'ex_cosmic', name: 'Cósmico', icon: '🌌', color: '#9B59B6', pix: 12.99, skill: 'Tempo', desc: 'Lento 5s', cd: 18, fx: 'slow' }
+        ];
+
+        // COLECIONÁVEIS
+        const COLS = [
+            { id: 'c1', name: 'Coroa', icon: '👑' },
+            { id: 'c2', name: 'Estrela', icon: '🌟' },
+            { id: 'c3', name: 'Troféu', icon: '🏆' },
+            { id: 'c4', name: 'Diamante', icon: '💎' },
+            { id: 'c5', name: 'Escama', icon: '🐉' },
+            { id: 'c6', name: 'Pena', icon: '🪶' },
+            { id: 'c7', name: 'Lua', icon: '🌙' },
+            { id: 'c8', name: 'Cristal', icon: '🔮' },
+            { id: 'c9', name: 'Coração', icon: '❤️‍🔥' }
+        ];
+
+        // CENÁRIOS
+        const SCENES = {
+            normal: { bg1: '#87CEEB', bg2: '#E0F6FF', gnd: '#228B22', name: 'Normal' },
+            night: { bg1: '#0a0a1a', bg2: '#1a1a30', gnd: '#0a0a15', name: 'Noite' },
+            sunset: { bg1: '#FF6B6B', bg2: '#FECA57', gnd: '#8B4513', name: 'Pôr do Sol' },
+            storm: { bg1: '#3d3d3d', bg2: '#1a1a1a', gnd: '#111', name: 'Tempestade' },
+            space: { bg1: '#0a0a20', bg2: '#1a1a40', gnd: '#333366', name: 'Espaço' },
+            hell: { bg1: '#8B0000', bg2: '#FF4500', gnd: '#2d0000', name: 'Inferno' },
+            heaven: { bg1: '#FFFAFA', bg2: '#F0F8FF', gnd: '#E6E6FA', name: 'Paraíso' }
+        };
+
+        const DIFFS = {
+            easy: { gap: 180, spd: 2, name: 'Fácil' },
+            normal: { gap: 140, spd: 2.5, name: 'Normal' },
+            hard: { gap: 110, spd: 3, name: 'Difícil' },
+            extreme: { gap: 85, spd: 3.5, name: 'Extremo' }
+        };
+
+        // ============================================
+        // ESTADO
+        // ============================================
+        let user = null;
+        let role = 'player';
+        let scene = 'normal';
+        let diff = 'normal';
+        let state = 'menu';
+        let mode = 'solo';
+        let score = 0;
+        let pixItem = null;
+
+        let data = {
+            coins: 0, gems: 0, level: 1, xp: 0, record: 0,
+            inv: ['b_default'], equipped: 'b_default', cols: [],
+            vip: false, legendary: false, sub: false
+        };
+
+        let roles = JSON.parse(localStorage.getItem('skyRoles') || '{}');
+        roles[OWNER.email] = 'owner';
+
+        let players = [
+            { x: 70, y: 230, vy: 0, alive: true },
+            { x: 70, y: 330, vy: 0, alive: true }
+        ];
+        let pipes = [], coins = [], particles = [], drops = [];
+
+        let skillOk = true, skillCd = 0, skillMax = 15;
+        let fx = { speed: false, ghost: false, shield: false, slow: false, revived: false };
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        function switchTab(t) {
+            document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tabLogin').style.display = t === 'login' ? 'block' : 'none';
+            document.getElementById('tabRegister').style.display = t === 'register' ? 'block' : 'none';
+        }
+
+        function doLogin() {
+            const email = document.getElementById('inEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('inPass').value;
+            if (!email || !pass) return notify('Preencha tudo!', 'admin');
+
+            // Owner
+            if (email === OWNER.email && pass === OWNER.pass) {
+                user = { email, name: 'Dragons_Plays' };
+                role = 'owner';
+                // Owner tem TUDO
+                data = {
+                    coins: 999999, gems: 99999, level: 99, xp: 0, record: 9999,
+                    inv: [...BIRDS.map(b => b.id), ...EXCLUSIVES.map(e => e.id)],
+                    equipped: 'ex_dragon', cols: COLS.map(c => c.id),
+                    vip: true, legendary: true, sub: true
+                };
+                enter();
+                notify('👑 Bem-vindo, Dono!', 'event');
+                return;
+            }
+
+            // Normal
+            const users = JSON.parse(localStorage.getItem('skyUsers') || '{}');
+            if (users[email] && atob(users[email].pass) === pass) {
+                user = { email, name: users[email].name };
+                role = roles[email] || 'player';
+                load(email);
+                enter();
+                notify('Bem-vindo, ' + users[email].name + '!', 'success');
+            } else {
+                notify('Email ou senha errados!', 'admin');
+            }
+        }
+
+        function doRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('regPass').value;
+            const pass2 = document.getElementById('regPass2').value;
+
+            if (!name || !email || !pass) return notify('Preencha tudo!', 'admin');
+            if (pass !== pass2) return notify('Senhas diferentes!', 'admin');
+            if (pass.length < 4) return notify('Senha muito curta!', 'admin');
+
+            const users = JSON.parse(localStorage.getItem('skyUsers') || '{}');
+            if (users[email]) return notify('Email já existe!', 'admin');
+
+            // Salvar usuário
+            users[email] = { name, pass: btoa(pass), created: Date.now() };
+            localStorage.setItem('skyUsers', JSON.stringify(users));
+
+            // Criar dados iniciais (começar do zero)
+            data = {
+                coins: 0, gems: 0, level: 1, xp: 0, record: 0,
+                inv: ['b_default'], equipped: 'b_default', cols: [],
+                vip: false, legendary: false, sub: false
+            };
+
+            user = { email, name };
+            role = 'player';
+            save(email);
+            enter();
+            notify('Conta criada! Bem-vindo, ' + name + '!', 'success');
+        }
+
+        function enterGuest() {
+            user = { email: 'guest_' + Date.now(), name: 'Visitante', guest: true };
+            role = 'player';
+            // Visitante sempre começa do zero
+            data = {
+                coins: 0, gems: 0, level: 1, xp: 0, record: 0,
+                inv: ['b_default'], equipped: 'b_default', cols: [],
+                vip: false, legendary: false, sub: false
+            };
+            enter();
+            notify('Modo visitante - progresso não salva!', 'admin');
+        }
+
+        function logout() {
+            if (user && !user.guest) save(user.email);
+            user = null;
+            role = 'player';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('adminPanel').classList.remove('open');
+        }
+
+        function enter() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('uName').textContent = user.name;
+
+            let badge = '';
+            if (role === 'owner') badge = '<span class="badge badge-owner">👑 DONO</span>';
+            else if (role === 'admin') badge = '<span class="badge badge-admin">👑 ADMIN</span>';
+            else if (role === 'mod') badge = '<span class="badge badge-mod">🛡️ MOD</span>';
+            else if (data.vip) badge = '<span class="badge badge-vip">⭐ VIP</span>';
+            document.getElementById('uBadge').innerHTML = badge;
+
+            document.getElementById('btnAdmin').style.display =
+                ['owner', 'admin', 'mod'].includes(role) ? 'inline-block' : 'none';
+
+            updateUI();
+            renderCols();
+            updateRoles();
+            draw();
+        }
+
+        function load(email) {
+            const s = localStorage.getItem('skyData_' + email);
+            if (s) data = { ...data, ...JSON.parse(s) };
+        }
+
+        function save(email) {
+            if (email && !user?.guest) {
+                localStorage.setItem('skyData_' + email, JSON.stringify(data));
+            }
+        }
+
+        // ============================================
+        // EXPORT/IMPORT
+        // ============================================
+        function exportData() {
+            const blob = new Blob([JSON.stringify({ user: user.email, data, roles }, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'skyjumper_backup_' + Date.now() + '.json';
+            a.click();
+            notify('Dados exportados!', 'success');
+        }
+
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const imported = JSON.parse(ev.target.result);
+                    if (imported.data) {
+                        data = imported.data;
+                        updateUI();
+                        renderCols();
+                        if (user && !user.guest) save(user.email);
+                        notify('Dados importados!', 'success');
+                    }
+                } catch (err) {
+                    notify('Arquivo inválido!', 'admin');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ============================================
+        // GAME
+        // ============================================
+        function startGame(m) {
+            mode = m;
+            state = 'playing';
+            score = 0;
+            pipes = []; coins = []; particles = []; drops = [];
+            fx = { speed: false, ghost: false, shield: false, slow: false, revived: false };
+            skillOk = true; skillCd = 0;
+
+            players[0] = { x: 70, y: m === 'coop' ? 190 : 240, vy: 0, alive: true };
+            players[1] = { x: 70, y: 320, vy: 0, alive: true };
+
+            document.getElementById('iMode').textContent = m === 'coop' ? 'Coop' : 'Solo';
+            document.getElementById('coopInfo').style.display = m === 'coop' ? 'flex' : 'none';
+
+            const bird = getBird();
+            if (bird && bird.skill) {
+                document.getElementById('skillBar').style.display = 'flex';
+                document.getElementById('sIcon').textContent = bird.icon;
+                skillMax = bird.cd || 15;
+                document.getElementById('iSkill').textContent = bird.skill;
+            } else {
+                document.getElementById('skillBar').style.display = 'none';
+                document.getElementById('iSkill').textContent = 'Nenhum';
+            }
+
+            loop();
+        }
+
+        function getBird() {
+            return BIRDS.find(b => b.id === data.equipped) || EXCLUSIVES.find(e => e.id === data.equipped);
+        }
+
+        function jump(i) {
+            if (state !== 'playing' || !players[i]?.alive) return;
+            players[i].vy = -9;
+            mkPart(players[i].x, players[i].y, getColor(), 4);
+        }
+
+        function getColor() {
+            const b = getBird();
+            if (!b) return '#FFD700';
+            if (b.color === 'rainbow') return `hsl(${Date.now()/10%360},100%,50%)`;
+            return b.color;
+        }
+
+        function loop() {
+            if (state !== 'playing') return;
+            update();
+            draw();
+            updateSkillUI();
+            requestAnimationFrame(loop);
+        }
+
+        function update() {
+            const d = DIFFS[diff];
+            const sl = fx.slow ? 0.4 : 1;
+            const sp = fx.speed ? 1.5 : 1;
+            const pn = mode === 'coop' ? 2 : 1;
+
+            for (let i = 0; i < pn; i++) {
+                if (!players[i].alive) continue;
+                players[i].vy += 0.5 * sl;
+                players[i].y += players[i].vy * sl;
+
+                if (players[i].y < 14 || players[i].y > canvas.height - 14) {
+                    if (fx.shield) { fx.shield = false; players[i].vy = 0; players[i].y = Math.max(20, Math.min(canvas.height - 20, players[i].y)); }
+                    else kill(i);
+                }
+            }
+
+            if (!players.slice(0, pn).some(p => p.alive)) { gameOver(); return; }
+
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 190) {
+                const gapY = Math.random() * 160 + 70;
+                pipes.push({ x: canvas.width, gapY, gap: d.gap, passed: false });
+                if (Math.random() < 0.6) coins.push({ x: canvas.width + 25, y: gapY + d.gap / 2 });
+            }
+
+            for (let i = pipes.length - 1; i >= 0; i--) {
+                pipes[i].x -= d.spd * sl * sp;
+
+                for (let p = 0; p < pn; p++) {
+                    if (!players[p].alive) continue;
+                    if (collide(players[p], pipes[i]) && !fx.ghost) {
+                        if (fx.shield) { fx.shield = false; mkPart(players[p].x, players[p].y, '#0ff', 15); }
+                        else kill(p);
+                    }
+                }
+
+                if (!pipes[i].passed && pipes[i].x + 50 < players[0].x) {
+                    pipes[i].passed = true;
+                    score++;
+                    data.coins += Math.floor(2 * (data.legendary ? 3 : data.vip ? 2 : 1));
+                    updateUI();
+                }
+
+                if (pipes[i].x < -60) pipes.splice(i, 1);
+            }
+
+            for (let i = coins.length - 1; i >= 0; i--) {
+                coins[i].x -= d.spd * sl * sp;
+                for (let p = 0; p < pn; p++) {
+                    if (!players[p].alive) continue;
+                    if (Math.hypot(coins[i].x - players[p].x, coins[i].y - players[p].y) < 26) {
+                        data.coins += 5 * (data.legendary ? 3 : data.vip ? 2 : 1);
+                        mkPart(coins[i].x, coins[i].y, '#FFD700', 8);
+                        coins.splice(i, 1);
+                        updateUI();
+                        break;
+                    }
+                }
+                if (coins[i] && coins[i].x < -20) coins.splice(i, 1);
+            }
+
+            for (let i = drops.length - 1; i >= 0; i--) {
+                drops[i].x -= 2 * sl;
+                drops[i].y += Math.sin(Date.now() / 200) * 0.3;
+                for (let p = 0; p < pn; p++) {
+                    if (!players[p].alive) continue;
+                    if (Math.hypot(drops[i].x - players[p].x, drops[i].y - players[p].y) < 32) {
+                        const dr = drops[i];
+                        if (dr.type === 'col' && !data.cols.includes(dr.id)) {
+                            data.cols.push(dr.id);
+                            notify('🎁 Colecionável: ' + dr.name, 'event');
+                            renderCols();
+                        } else if (dr.type === 'bird' && !data.inv.includes(dr.id)) {
+                            data.inv.push(dr.id);
+                            notify('🎁 Pássaro: ' + dr.name + '!', 'event');
+                        }
+                        mkPart(dr.x, dr.y, '#FFD700', 20);
+                        drops.splice(i, 1);
+                        break;
+                    }
+                }
+                if (drops[i] && drops[i].x < -50) drops.splice(i, 1);
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].x += particles[i].vx;
+                particles[i].y += particles[i].vy;
+                particles[i].vy += 0.1;
+                particles[i].life -= 0.025;
+                if (particles[i].life <= 0) particles.splice(i, 1);
+            }
+        }
+
+        function kill(i) {
+            const b = getBird();
+            if (b && b.fx === 'revive' && !fx.revived) {
+                fx.revived = true;
+                players[i].y = 240;
+                players[i].vy = 0;
+                mkPart(players[i].x, players[i].y, '#FF4500', 25);
+                notify('🔥 Fênix Renasceu!', 'event');
+                return;
+            }
+            players[i].alive = false;
+            mkPart(players[i].x, players[i].y, '#e74c3c', 20);
+        }
+
+        function collide(p, pipe) {
+            if (p.x + 13 > pipe.x && p.x - 13 < pipe.x + 48) {
+                if (p.y - 13 < pipe.gapY || p.y + 13 > pipe.gapY + pipe.gap) return true;
+            }
+            return false;
+        }
+
+        function gameOver() {
+            state = 'over';
+            document.getElementById('coopInfo').style.display = 'none';
+            document.getElementById('skillBar').style.display = 'none';
+
+            if (score > data.record) {
+                data.record = score;
+                notify('🏆 NOVO RECORDE: ' + score, 'event');
+            }
+
+            data.coins += score * 5;
+            data.xp += score * 10;
+            if (data.xp >= data.level * 500) { data.level++; data.xp = 0; }
+
+            if (user && !user.guest) save(user.email);
+            updateUI();
+
+            setTimeout(() => alert(`Game Over!\nPontos: ${score}\nRecorde: ${data.record}`), 100);
+        }
+
+        // ============================================
+        // SKILL
+        // ============================================
+        function useSkill() {
+            if (!skillOk || state !== 'playing') return;
+            const b = getBird();
+            if (!b || !b.fx) return;
+
+            skillOk = false;
+            skillCd = skillMax;
+
+            switch (b.fx) {
+                case 'speed': fx.speed = true; setTimeout(() => fx.speed = false, 4000); notify('⚡ Velocidade!', 'event'); break;
+                case 'ghost': fx.ghost = true; setTimeout(() => fx.ghost = false, 3000); notify('👻 Fantasma!', 'event'); break;
+                case 'shield': fx.shield = true; notify('👼 Escudo!', 'event'); break;
+                case 'slow': fx.slow = true; setTimeout(() => fx.slow = false, 5000); notify('🌌 Tempo lento!', 'event'); break;
+                case 'freeze': fx.slow = true; setTimeout(() => fx.slow = false, 3000); notify('❄️ Congelou!', 'event'); break;
+                case 'fire': pipes.splice(0, 2); mkPart(200, 240, '#FF4500', 30); notify('🐉 Fogo!', 'event'); break;
+                case 'tp': players[0].y = Math.max(50, players[0].y - 120); players[0].vy = -3; notify('🌑 Teleporte!', 'event'); break;
+                case 'explode': pipes = []; coins = []; mkPart(210, 250, '#f00', 50); notify('😈 EXPLOSÃO!', 'admin'); break;
+            }
+
+            mkPart(players[0].x, players[0].y, b.color, 15);
+        }
+
+        function updateSkillUI() {
+            if (!skillOk) {
+                skillCd -= 1/60;
+                if (skillCd <= 0) { skillOk = true; skillCd = 0; }
+            }
+
+            const btn = document.getElementById('sBtn');
+            const txt = document.getElementById('sCd');
+            if (skillOk) {
+                btn.classList.add('ready');
+                btn.classList.remove('cd');
+                txt.textContent = '';
+            } else {
+                btn.classList.remove('ready');
+                btn.classList.add('cd');
+                txt.textContent = Math.ceil(skillCd) + 's';
+            }
+        }
+
+        // ============================================
+        // DRAW
+        // ============================================
+        function draw() {
+            const sc = SCENES[scene];
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, sc.bg1);
+            grad.addColorStop(1, sc.bg2);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = sc.gnd;
+            ctx.fillRect(0, canvas.height - 18, canvas.width, 18);
+
+            particles.forEach(p => {
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+
+            pipes.forEach(pipe => {
+                const pg = ctx.createLinearGradient(pipe.x, 0, pipe.x + 48, 0);
+                pg.addColorStop(0, '#2d8f2d');
+                pg.addColorStop(0.5, '#3cb043');
+                pg.addColorStop(1, '#2d8f2d');
+                ctx.fillStyle = pg;
+                ctx.fillRect(pipe.x, 0, 48, pipe.gapY);
+                ctx.fillRect(pipe.x - 4, pipe.gapY - 18, 56, 18);
+                ctx.fillRect(pipe.x, pipe.gapY + pipe.gap, 48, canvas.height);
+                ctx.fillRect(pipe.x - 4, pipe.gapY + pipe.gap, 56, 18);
+            });
+
+            coins.forEach(c => {
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#B8860B';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('$', c.x, c.y);
+            });
+
+            drops.forEach(d => {
+                ctx.font = '28px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(d.icon, d.x, d.y);
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, 20 + Math.sin(Date.now()/150)*4, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+
+            const pn = mode === 'coop' ? 2 : 1;
+            for (let i = 0; i < pn; i++) {
+                if (players[i].alive) drawBird(players[i], i);
+            }
+
+            if (fx.shield && players[0].alive) {
+                ctx.strokeStyle = 'rgba(100,200,255,0.7)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(players[0].x, players[0].y, 20, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            if (fx.ghost) ctx.globalAlpha = 0.5;
+
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 4;
+            ctx.font = 'bold 44px Arial';
+            ctx.textAlign = 'center';
+            ctx.strokeText(score, canvas.width / 2, 55);
+            ctx.fillText(score, canvas.width / 2, 55);
+
+            if (state === 'menu') {
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 30px Arial';
+                ctx.fillText('Sky Jumper', canvas.width / 2, canvas.height / 2 - 25);
+                ctx.font = '14px Arial';
+                ctx.fillText('Clique Solo ou Coop para jogar', canvas.width / 2, canvas.height / 2 + 10);
+            }
+        }
+
+        function drawBird(p, idx) {
+            const col = idx === 0 ? getColor() : '#e74c3c';
+            const b = idx === 0 ? getBird() : null;
+
+            if (b && b.skill) {
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = col;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+
+            ctx.fillStyle = col;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 13, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(p.x + 5, p.y - 3, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(p.x + 6, p.y - 3, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#FF8C00';
+            ctx.beginPath();
+            ctx.moveTo(p.x + 13, p.y);
+            ctx.lineTo(p.x + 20, p.y + 2);
+            ctx.lineTo(p.x + 13, p.y + 4);
+            ctx.fill();
+
+            if (b && b.icon) {
+                ctx.font = '11px Arial';
+                ctx.fillText(b.icon, p.x - 5, p.y - 16);
+            }
+        }
+
+        function mkPart(x, y, color, n) {
+            for (let i = 0; i < n; i++) {
+                particles.push({ x, y, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8, color, life: 1, size: Math.random() * 4 + 2 });
+            }
+        }
+
+        // ============================================
+        // ADMIN
+        // ============================================
+        function toggleAdmin() { document.getElementById('adminPanel').classList.toggle('open'); }
+
+        function sendGlobalMsg() {
+            const title = document.getElementById('aMsgTitle').value || 'Mensagem';
+            const text = document.getElementById('aMsgText').value;
+            const color = document.getElementById('aMsgColor').value;
+            if (!text) return notify('Digite algo!', 'admin');
+
+            const gm = document.getElementById('globalMsg');
+            gm.style.borderColor = color;
+            document.getElementById('gTitle').textContent = title;
+            document.getElementById('gTitle').style.color = color;
+            document.getElementById('gText').textContent = text;
+            document.getElementById('gFrom').textContent = '— ' + user.name;
+            gm.style.display = 'block';
+            setTimeout(() => gm.style.display = 'none', 6000);
+
+            const log = document.getElementById('msgLog');
+            log.innerHTML = `<div style="border-left:3px solid ${color};padding:5px 8px;margin:5px 0;background:rgba(0,0,0,0.3);border-radius:4px;"><strong style="color:${color};">${title}</strong><br>${text}<br><small style="color:#888;">— ${user.name}</small></div>` + log.innerHTML;
+
+            notify('Enviado!', 'success');
+        }
+
+        function startBirdEvent() {
+            const id = document.getElementById('aEventBird').value;
+            const b = EXCLUSIVES.find(e => e.id === id);
+            if (!b) return;
+
+            showGlobalDirect('🎉 EVENTO!', `Pássaro ${b.name} ${b.icon} caindo! Pegue para desbloquear!`, '#FFD700');
+
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    drops.push({ type: 'bird', id: b.id, name: b.name, icon: b.icon, x: canvas.width + 50, y: Math.random() * 280 + 90 });
+                }, i * 2000);
+            }
+
+            // Muda cenário e dificuldade baseado no pássaro
+            if (b.id.includes('ice')) { scene = 'storm'; diff = 'hard'; }
+            else if (b.id.includes('phoenix') || b.id.includes('demon')) { scene = 'hell'; diff = 'hard'; }
+            else if (b.id.includes('angel')) { scene = 'heaven'; diff = 'easy'; }
+            else if (b.id.includes('cosmic')) { scene = 'space'; diff = 'extreme'; }
+            else if (b.id.includes('shadow')) { scene = 'night'; diff = 'hard'; }
+            else { scene = 'sunset'; diff = 'normal'; }
+
+            document.getElementById('iScene').textContent = SCENES[scene].name + ' / ' + DIFFS[diff].name;
+            notify('Evento: ' + b.name + ' | Cenário: ' + SCENES[scene].name, 'event');
+        }
+
+        function showGlobalDirect(title, text, color) {
+            const gm = document.getElementById('globalMsg');
+            gm.style.borderColor = color;
+            document.getElementById('gTitle').textContent = title;
+            document.getElementById('gTitle').style.color = color;
+            document.getElementById('gText').textContent = text;
+            document.getElementById('gFrom').textContent = '— Sistema';
+            gm.style.display = 'block';
+            setTimeout(() => gm.style.display = 'none', 5000);
+        }
+
+        function applySceneDiff() {
+            scene = document.getElementById('aScene').value;
+            diff = document.getElementById('aDiff').value;
+            document.getElementById('iScene').textContent = SCENES[scene].name + ' / ' + DIFFS[diff].name;
+            showGlobalDirect('🌍 Mudança!', `Cenário: ${SCENES[scene].name} | Dificuldade: ${DIFFS[diff].name}`, '#0ff');
+            draw();
+        }
+
+        function giveReward() {
+            const amt = parseInt(document.getElementById('aRewardAmt').value) || 0;
+            const type = document.getElementById('aRewardType').value;
+            if (amt <= 0) return;
+
+            if (type === 'coins') data.coins += amt;
+            else data.gems += amt;
+
+            showGlobalDirect('🎁 Recompensa!', `+${amt} ${type === 'coins' ? 'moedas' : 'gemas'} para todos!`, '#2ecc71');
+            updateUI();
+        }
+
+        function setRole() {
+            const email = document.getElementById('aRoleEmail').value.trim().toLowerCase();
+            const r = document.getElementById('aRoleType').value;
+            if (!email) return notify('Digite o email!', 'admin');
+            if (email === OWNER.email) return notify('Não pode mudar o dono!', 'admin');
+
+            roles[email] = r;
+            localStorage.setItem('skyRoles', JSON.stringify(roles));
+            updateRoles();
+            notify('Cargo definido: ' + email + ' → ' + r, 'success');
+        }
+
+        function updateRoles() {
+            let html = '<strong>Cargos:</strong><br>';
+            for (const [e, r] of Object.entries(roles)) {
+                if (r !== 'player') html += `${e.substring(0,18)}... → ${r}<br>`;
+            }
+            document.getElementById('roleList').innerHTML = html;
+        }
+
+        function dropCollectible() {
+            const id = document.getElementById('aColDrop').value;
+            const c = COLS.find(x => x.id === id);
+            if (!c) return;
+
+            drops.push({ type: 'col', id: c.id, name: c.name, icon: c.icon, x: canvas.width + 50, y: Math.random() * 280 + 90 });
+            showGlobalDirect('🎁 Colecionável!', `${c.name} ${c.icon} caindo no jogo!`, '#9b59b6');
+        }
+
+        function runCmd() {
+            const cmd = document.getElementById('aCmd').value.trim().toLowerCase();
+            const out = document.getElementById('cmdOut');
+            let res = '';
+
+            if (cmd === '/help') res = '/coins N, /gems N, /level N, /unlock, /clear';
+            else if (cmd.startsWith('/coins ')) { data.coins += parseInt(cmd.split(' ')[1]) || 0; res = 'Moedas +'; }
+            else if (cmd.startsWith('/gems ')) { data.gems += parseInt(cmd.split(' ')[1]) || 0; res = 'Gemas +'; }
+            else if (cmd.startsWith('/level ')) { data.level = parseInt(cmd.split(' ')[1]) || 1; res = 'Level set'; }
+            else if (cmd === '/unlock') {
+                BIRDS.forEach(b => { if (!data.inv.includes(b.id)) data.inv.push(b.id); });
+                EXCLUSIVES.forEach(e => { if (!data.inv.includes(e.id)) data.inv.push(e.id); });
+                COLS.forEach(c => { if (!data.cols.includes(c.id)) data.cols.push(c.id); });
+                res = 'Tudo desbloqueado';
+            } else if (cmd === '/clear') { out.innerHTML = '> Limpo'; document.getElementById('aCmd').value = ''; updateUI(); renderCols(); return; }
+            else res = 'Comando desconhecido. /help';
+
+            out.innerHTML += '<br>> ' + res;
+            out.scrollTop = out.scrollHeight;
+            document.getElementById('aCmd').value = '';
+            updateUI();
+            renderCols();
+        }
+
+        // ============================================
+        // UI
+        // ============================================
+        function updateUI() {
+            document.getElementById('sCoins').textContent = data.coins.toLocaleString();
+            document.getElementById('sGems').textContent = data.gems.toLocaleString();
+            document.getElementById('sLevel').textContent = data.level;
+            document.getElementById('sRecord').textContent = data.record;
+
+            const b = getBird();
+            document.getElementById('iBird').textContent = b ? b.name : 'Padrão';
+        }
+
+        function notify(msg, type = 'normal') {
+            const n = document.getElementById('notif');
+            n.textContent = msg;
+            n.className = 'normal ' + type + ' show';
+            setTimeout(() => n.classList.remove('show'), 3500);
+        }
+
+        function openModal(id) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById(id).style.display = 'block';
+            if (id === 'shopModal') renderShop();
+            if (id === 'pixModal') renderPixExcl();
+        }
+
+        function closeModal(id) {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function shopTab(t) {
+            document.querySelectorAll('#shopModal .tabs button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('shopNormal').style.display = t === 'normal' ? 'grid' : 'none';
+            document.getElementById('shopExclusive').style.display = t === 'exclusive' ? 'grid' : 'none';
+        }
+
+        function renderShop() {
+            let html = '';
+            BIRDS.forEach(b => {
+                if (b.yt && !data.sub) return;
+                const own = data.inv.includes(b.id);
+                const eq = data.equipped === b.id;
+                html += `<div class="itemCard ${own ? 'owned' : ''} ${eq ? 'equipped' : ''}" onclick="${own ? `equip('${b.id}')` : (b.yt ? `openModal('ytModal')` : `buyBird('${b.id}',${b.price})`)}">
+                    <div class="itemIcon">${b.icon}</div>
+                    <div class="itemName">${b.name}</div>
+                    <div class="itemPrice">${eq ? '✓ Usando' : (own ? 'Equipar' : (b.yt ? 'YT' : '🪙 ' + b.price))}</div>
+                </div>`;
+            });
+            document.getElementById('shopNormal').innerHTML = html;
+
+            html = '';
+            EXCLUSIVES.forEach(e => {
+                const own = data.inv.includes(e.id);
+                const eq = data.equipped === e.id;
+                html += `<div class="itemCard exclusive ${own ? 'owned' : ''} ${eq ? 'equipped' : ''}" onclick="${own ? `equip('${e.id}')` : `buyExcl('${e.id}')`}">
+                    <div class="itemIcon">${e.icon}</div>
+                    <div class="itemName">${e.name}</div>
+                    <div class="itemPrice">${eq ? '✓ Usando' : (own ? 'Equipar' : 'R$ ' + e.pix.toFixed(2))}</div>
+                    <div class="itemSkill">⚡ ${e.skill}</div>
+                </div>`;
+            });
+            document.getElementById('shopExclusive').innerHTML = html;
+        }
+
+        function renderPixExcl() {
+            let html = '';
+            EXCLUSIVES.forEach(e => {
+                const own = data.inv.includes(e.id);
+                html += `<div class="itemCard exclusive ${own ? 'owned' : ''}" onclick="${own ? '' : `buyExcl('${e.id}')`}">
+                    <div class="itemIcon">${e.icon}</div>
+                    <div class="itemName">${e.name}</div>
+                    <div class="itemPrice">${own ? '✓ Tem' : 'R$ ' + e.pix.toFixed(2)}</div>
+                    <div class="itemSkill">${e.desc}</div>
+                </div>`;
+            });
+            document.getElementById('pixExcl').innerHTML = html;
+        }
+
+        function buyBird(id, price) {
+            if (data.coins < price) return notify('Moedas insuficientes!', 'admin');
+            data.coins -= price;
+            data.inv.push(id);
+            data.equipped = id;
+            updateUI();
+            renderShop();
+            notify('Comprado!', 'success');
+            if (user && !user.guest) save(user.email);
+        }
+
+        function equip(id) {
+            data.equipped = id;
+            updateUI();
+            renderShop();
+            notify('Equipado!', 'success');
+            if (user && !user.guest) save(user.email);
+        }
+
+        function buyExcl(id) {
+            const e = EXCLUSIVES.find(x => x.id === id);
+            if (!e) return;
+            pixItem = { type: 'bird', id, name: e.name, price: e.pix };
+            document.getElementById('pxName').textContent = '🔥 ' + e.name + ' ' + e.icon;
+            document.getElementById('pxPrice').textContent = 'R$ ' + e.pix.toFixed(2).replace('.', ',');
+            closeModal('shopModal');
+            closeModal('pixModal');
+            openModal('pixPayModal');
+        }
+
+        function buyPix(pkg, price) {
+            let name = pkg === 'starter' ? 'Starter' : (pkg === 'vip' ? 'VIP' : 'LENDÁRIO');
+            pixItem = { type: 'pkg', id: pkg, name, price };
+            document.getElementById('pxName').textContent = 'Pacote ' + name;
+            document.getElementById('pxPrice').textContent = 'R$ ' + price.toFixed(2).replace('.', ',');
+            closeModal('pixModal');
+            openModal('pixPayModal');
+        }
+
+        function confirmPix() {
+            const name = document.getElementById('pxBuyer').value.trim();
+            if (!name) return notify('Digite seu nome!', 'admin');
+
+            if (pixItem.type === 'bird') {
+                if (!data.inv.includes(pixItem.id)) {
+                    data.inv.push(pixItem.id);
+                    data.equipped = pixItem.id;
+                }
+            } else {
+                const pkg = pixItem.id;
+                if (pkg === 'starter') { data.coins += 1000; data.gems += 10; }
+                else if (pkg === 'vip') {
+                    data.coins += 3000; data.gems += 30; data.vip = true;
+                    BIRDS.forEach(b => { if (!data.inv.includes(b.id)) data.inv.push(b.id); });
+                } else {
+                    data.coins += 10000; data.gems += 100; data.vip = true; data.legendary = true;
+                    BIRDS.forEach(b => { if (!data.inv.includes(b.id)) data.inv.push(b.id); });
+                    EXCLUSIVES.forEach(e => { if (!data.inv.includes(e.id)) data.inv.push(e.id); });
+                    COLS.forEach(c => { if (!data.cols.includes(c.id)) data.cols.push(c.id); });
+                }
+            }
+
+            closeModal('pixPayModal');
+            updateUI();
+            renderCols();
+            notify('✅ Compra realizada! Obrigado!', 'success');
+            if (user && !user.guest) save(user.email);
+        }
+
+        function verifyYT() {
+            const input = document.getElementById('ytIn').value.trim().toLowerCase();
+            if (input === 'dragons_plays' || input === 'dragonsplays') {
+                if (!data.inv.includes('b_yt')) data.inv.push('b_yt');
+                data.sub = true;
+                data.coins += 500;
+                data.equipped = 'b_yt';
+                closeModal('ytModal');
+                updateUI();
+                notify('🎉 Pássaro YT desbloqueado! +500!', 'event');
+                if (user && !user.guest) save(user.email);
+            } else {
+                notify('Digite: Dragons_Plays', 'admin');
+            }
+        }
+
+        function renderCols() {
+            let html = '';
+            COLS.forEach(c => {
+                const has = data.cols.includes(c.id);
+                html += `<div class="colItem ${has ? 'has' : ''}"><div class="ico">${c.icon}</div><div class="nm">${c.name}</div></div>`;
+            });
+            document.getElementById('colList').innerHTML = html;
+        }
+
+        // ============================================
+        // CONTROLS
+        // ============================================
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space' || e.code === 'KeyW') { e.preventDefault(); jump(0); }
+            if (e.code === 'ArrowUp') { e.preventDefault(); jump(1); }
+            if (e.code === 'KeyQ') useSkill();
+        });
+        canvas.addEventListener('click', () => jump(0));
+        document.getElementById('overlay').addEventListener('click', () => {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            document.getElementById('overlay').style.display = 'none';
+        });
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.getElementById('iScene').textContent = SCENES[scene].name + ' / ' + DIFFS[diff].name;
+        renderCols();
+        draw();
+    </script>
+</body>
+</html>
