@@ -571,5 +571,369 @@
         renderCols();
         draw();
     </script>
+    // ========================================
+// 🎮 COMANDOS DE CONSOLE (CHEATS)
+// ========================================
+
+window.ph1 = function() {
+    console.log(`
+    ╔════════════════════════════════════════╗
+    ║   🎮 SKY JUMPER - PAINEL HACKER       ║
+    ║   👑 Dragons_Plays Edition            ║
+    ╚════════════════════════════════════════╝
+    
+    📋 COMANDOS DISPONÍVEIS:
+    
+    🎯 JOGADOR:
+    └─ godmode()        → Modo Deus (imortal)
+    └─ maxcoins()       → 999.999 moedas
+    └─ maxgems()        → 99.999 gemas
+    └─ maxlevel()       → Level 99
+    └─ unlockall()      → Desbloquear tudo
+    └─ unlockbirds()    → Todos os pássaros
+    └─ unlockexcl()     → Todos exclusivos
+    └─ unlockcols()     → Todos colecionáveis
+    └─ resetprogress()  → Resetar progresso
+    
+    👑 ADMIN:
+    └─ becomeadmin()    → Virar admin
+    └─ becomeowner()    → Virar dono
+    └─ openpanel()      → Abrir painel admin
+    
+    🎨 VISUAL:
+    └─ rainbow()        → Modo arco-íris
+    └─ bigbird()        → Pássaro gigante
+    └─ particles(n)     → Explosão de partículas
+    └─ disco()          → Modo discoteca
+    
+    🌍 JOGO:
+    └─ setscene('name') → Mudar cenário
+    └─ setdiff('name')  → Mudar dificuldade
+    └─ nopipes()        → Remover todos os canos
+    └─ slowmo()         → Câmera lenta
+    └─ fastmo()         → Velocidade 2x
+    └─ addcoins(n)      → Adicionar n moedas
+    └─ addgems(n)       → Adicionar n gemas
+    
+    🔥 POWER-UPS:
+    └─ speed()          → Velocidade por 10s
+    └─ shield()         → Escudo invencível
+    └─ ghost()          → Atravessar canos
+    └─ explode()        → Explodir tudo
+    └─ freeze()         → Congelar jogo
+    
+    ℹ️ INFO:
+    └─ stats()          → Ver estatísticas
+    └─ save()           → Salvar agora
+    └─ help()           → Mostrar comandos
+    
+    💡 Use: ph1() para ver este menu
+    `);
+};
+
+// 🎯 COMANDOS DE JOGADOR
+window.godmode = function() {
+    window.godModeActive = true;
+    notify('⚡ MODO DEUS ATIVADO!');
+    console.log('✅ Você está imortal!');
+};
+
+window.maxcoins = function() {
+    data.coins = 999999;
+    updateUI();
+    notify('💰 999.999 MOEDAS!');
+    console.log('✅ Moedas máximas adicionadas!');
+};
+
+window.maxgems = function() {
+    data.gems = 99999;
+    updateUI();
+    notify('💎 99.999 GEMAS!');
+    console.log('✅ Gemas máximas adicionadas!');
+};
+
+window.maxlevel = function() {
+    data.level = 99;
+    data.xp = 0;
+    updateUI();
+    notify('⭐ LEVEL 99!');
+    console.log('✅ Level máximo alcançado!');
+};
+
+window.unlockall = function() {
+    unlockbirds();
+    unlockexcl();
+    unlockcols();
+    data.vip = true;
+    data.legendary = true;
+    data.sub = true;
+    maxcoins();
+    maxgems();
+    maxlevel();
+    notify('🎉 TUDO DESBLOQUEADO!');
+    console.log('✅ Você tem TUDO agora!');
+};
+
+window.unlockbirds = function() {
+    BIRDS.forEach(b => {
+        if (!data.inv.includes(b.id)) data.inv.push(b.id);
+    });
+    renderShop();
+    notify('🐦 Todos os pássaros desbloqueados!');
+    console.log('✅ ' + BIRDS.length + ' pássaros desbloqueados!');
+};
+
+window.unlockexcl = function() {
+    EXCLUSIVES.forEach(e => {
+        if (!data.inv.includes(e.id)) data.inv.push(e.id);
+    });
+    renderShop();
+    notify('🔥 Exclusivos desbloqueados!');
+    console.log('✅ ' + EXCLUSIVES.length + ' exclusivos desbloqueados!');
+};
+
+window.unlockcols = function() {
+    COLS.forEach(c => {
+        if (!data.cols.includes(c.id)) data.cols.push(c.id);
+    });
+    renderCols();
+    notify('💎 Colecionáveis completos!');
+    console.log('✅ ' + COLS.length + ' colecionáveis obtidos!');
+};
+
+window.resetprogress = function() {
+    if (confirm('⚠️ Resetar TODO o progresso?')) {
+        data = {
+            coins: 0, gems: 0, level: 1, xp: 0, record: 0,
+            inv: ['b_default'], equipped: 'b_default', cols: [],
+            vip: false, legendary: false, sub: false
+        };
+        updateUI();
+        renderCols();
+        notify('🔄 Progresso resetado!');
+        console.log('✅ Tudo foi resetado!');
+    }
+};
+
+// 👑 COMANDOS ADMIN
+window.becomeadmin = function() {
+    role = 'admin';
+    document.getElementById('btnAdmin').style.display = 'inline-block';
+    document.getElementById('uBadge').innerHTML = '<span class="badge badge-admin">👑 ADMIN</span>';
+    notify('👑 Você é ADMIN!');
+    console.log('✅ Admin ativado!');
+};
+
+window.becomeowner = function() {
+    role = 'owner';
+    user = {email: 'hacker@local', name: 'HACKER', isOwner: true};
+    document.getElementById('uName').textContent = 'HACKER';
+    document.getElementById('btnAdmin').style.display = 'inline-block';
+    document.getElementById('uBadge').innerHTML = '<span class="badge badge-owner">👑 DONO</span>';
+    unlockall();
+    notify('👑 Você é o DONO!');
+    console.log('✅ Dono ativado! Você tem TUDO!');
+};
+
+window.openpanel = function() {
+    becomeadmin();
+    document.getElementById('adminPanel').classList.add('open');
+    notify('📋 Painel Admin aberto!');
+};
+
+// 🎨 COMANDOS VISUAIS
+window.rainbow = function() {
+    window.rainbowMode = true;
+    notify('🌈 MODO ARCO-ÍRIS!');
+    console.log('✅ Efeito rainbow ativado!');
+};
+
+window.bigbird = function() {
+    window.bigBirdMode = !window.bigBirdMode;
+    notify(window.bigBirdMode ? '🐦 PÁSSARO GIGANTE!' : '🐦 Tamanho normal');
+    console.log('✅ Big bird: ' + (window.bigBirdMode ? 'ON' : 'OFF'));
+};
+
+window.particles = function(n = 100) {
+    mkPart(200, 240, '#FFD700', n);
+    notify('✨ EXPLOSÃO!');
+    console.log('✅ ' + n + ' partículas criadas!');
+};
+
+window.disco = function() {
+    window.discoMode = !window.discoMode;
+    notify(window.discoMode ? '🎵 DISCO MODE!' : '🎵 Modo normal');
+    if (window.discoMode) {
+        let i = 0;
+        window.discoInterval = setInterval(() => {
+            scene = ['normal','night','sunset','storm','space','hell','heaven'][i++ % 7];
+            draw();
+        }, 500);
+    } else {
+        clearInterval(window.discoInterval);
+        scene = 'normal';
+    }
+};
+
+// 🌍 COMANDOS DE JOGO
+window.setscene = function(name) {
+    if (SCENES[name]) {
+        scene = name;
+        document.getElementById('iScene').textContent = SCENES[name].name;
+        draw();
+        notify('🌍 Cenário: ' + SCENES[name].name);
+        console.log('✅ Cenário mudado para: ' + name);
+    } else {
+        console.log('❌ Cenários: normal, night, sunset, storm, space, hell, heaven');
+    }
+};
+
+window.setdiff = function(name) {
+    if (DIFFS[name]) {
+        diff = name;
+        notify('⚙️ Dificuldade: ' + name.toUpperCase());
+        console.log('✅ Dificuldade mudada para: ' + name);
+    } else {
+        console.log('❌ Dificuldades: easy, normal, hard, extreme');
+    }
+};
+
+window.nopipes = function() {
+    pipes = [];
+    notify('🚫 Canos removidos!');
+    console.log('✅ Todos os canos foram removidos!');
+};
+
+window.slowmo = function() {
+    window.slowMoActive = !window.slowMoActive;
+    fx.slow = window.slowMoActive;
+    notify(window.slowMoActive ? '🐌 Câmera lenta!' : '⚡ Velocidade normal');
+};
+
+window.fastmo = function() {
+    window.fastMoActive = !window.fastMoActive;
+    fx.speed = window.fastMoActive;
+    notify(window.fastMoActive ? '⚡ VELOCIDADE 2X!' : '🐌 Velocidade normal');
+};
+
+window.addcoins = function(n = 1000) {
+    data.coins += n;
+    updateUI();
+    notify('💰 +' + n + ' moedas!');
+    console.log('✅ ' + n + ' moedas adicionadas!');
+};
+
+window.addgems = function(n = 100) {
+    data.gems += n;
+    updateUI();
+    notify('💎 +' + n + ' gemas!');
+    console.log('✅ ' + n + ' gemas adicionadas!');
+};
+
+// 🔥 POWER-UPS
+window.speed = function() {
+    fx.speed = true;
+    setTimeout(() => fx.speed = false, 10000);
+    notify('⚡ VELOCIDADE 10s!');
+};
+
+window.shield = function() {
+    fx.shield = true;
+    notify('🛡️ ESCUDO ATIVO!');
+};
+
+window.ghost = function() {
+    fx.ghost = true;
+    setTimeout(() => fx.ghost = false, 5000);
+    notify('👻 FANTASMA 5s!');
+};
+
+window.explode = function() {
+    pipes = [];
+    coins = [];
+    mkPart(200, 240, '#FF0000', 100);
+    notify('💥 EXPLOSÃO!');
+};
+
+window.freeze = function() {
+    fx.slow = true;
+    setTimeout(() => fx.slow = false, 5000);
+    notify('❄️ CONGELADO 5s!');
+};
+
+// ℹ️ INFO
+window.stats = function() {
+    console.log(`
+    ═══════════════════════════════════
+    📊 ESTATÍSTICAS DO JOGADOR
+    ═══════════════════════════════════
+    👤 Nome: ${user ? user.name : 'N/A'}
+    📧 Email: ${user ? user.email : 'N/A'}
+    👑 Cargo: ${role}
+    
+    💰 Moedas: ${data.coins.toLocaleString()}
+    💎 Gemas: ${data.gems.toLocaleString()}
+    ⭐ Level: ${data.level}
+    🎯 XP: ${data.xp}
+    🏆 Recorde: ${data.record}
+    
+    🐦 Pássaros: ${data.inv.length}/${BIRDS.length + EXCLUSIVES.length}
+    💎 Colecionáveis: ${data.cols.length}/${COLS.length}
+    
+    ⭐ VIP: ${data.vip ? 'SIM' : 'NÃO'}
+    🔥 Legendary: ${data.legendary ? 'SIM' : 'NÃO'}
+    📺 YT Sub: ${data.sub ? 'SIM' : 'NÃO'}
+    
+    🎮 Equipado: ${data.equipped}
+    🌍 Cenário: ${scene}
+    ⚙️ Dificuldade: ${diff}
+    ═══════════════════════════════════
+    `);
+};
+
+window.save = function() {
+    if (user && !user.guest) {
+        saveCloud();
+        console.log('✅ Salvo na nuvem!');
+    } else {
+        console.log('⚠️ Visitantes não podem salvar!');
+    }
+};
+
+window.help = function() {
+    ph1();
+};
+
+// Modificar função kill para respeitar godmode
+const originalKill = kill;
+kill = function(i) {
+    if (window.godModeActive) {
+        mkPart(players[i].x, players[i].y, '#FFD700', 15);
+        notify('⚡ IMORTAL!');
+        return;
+    }
+    originalKill(i);
+};
+
+// Modificar drawBird para bigbird e rainbow
+const originalDrawBird = drawBird;
+drawBird = function(p, idx) {
+    if (window.bigBirdMode) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.scale(2, 2);
+        ctx.translate(-p.x, -p.y);
+        originalDrawBird(p, idx);
+        ctx.restore();
+    } else {
+        originalDrawBird(p, idx);
+    }
+};
+
+// Mensagem de boas-vindas
+console.log('%c🎮 SKY JUMPER - CONSOLE ATIVADO!', 'font-size:20px; color:#FFD700; font-weight:bold;');
+console.log('%cDigite ph1() para ver todos os comandos!', 'font-size:14px; color:#00ff00;');
+console.log('%c👑 Dragons_Plays Edition', 'font-size:12px; color:#888;');
 </body>
 </html>
+
